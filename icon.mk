@@ -92,5 +92,5 @@ if WITH_INKSCAPE
 	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 16 -h 16 $(abs_srcdir)/$<
 endif
 
-clean-hook:
+clean-local:
 	rm -rf $(ICONNAME).iconset
