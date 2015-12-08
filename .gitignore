@@ -15,6 +15,7 @@ Makefile
 Makefile.in
 mimetype
 *.iconset
+*.r
 /configure
 /autom4te.cache
 /depcomp

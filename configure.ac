@@ -39,6 +39,11 @@ if test x"$ICONUTIL" = x"" ; then
 	AC_MSG_WARN(['iconutil' could not be found; .icns won't be re-generated if SVGs are modified])
 fi
 
+AC_CHECK_PROG([REZ],[Rez],[Rez])
+AC_CHECK_PROG([SETFILE],[SetFile],[SetFile])
+
+AM_CONDITIONAL([WITH_REZ_SETFILE],[test -n "$REZ" && test -n "$SETFILE"])
+
 iconsrootdir='${prefix}/Library/Icons'
 AC_SUBST([iconsrootdir])
 

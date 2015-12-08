@@ -12,13 +12,24 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
+RSVGPNGOPTS = -z -f png -y 0.0 -o $@
+INKSCAPEPNGOPTS = -z -y 0.0 --export-png $(abs_builddir)/$@
+
 icondir = $(iconsrootdir)/$(ICONNAME).icon
 
 ICONPNGS = $(ICONNAME)@1024.png $(ICONNAME)@512.png $(ICONNAME)@256.png \
 	$(ICONNAME)@128.png $(ICONNAME)@64.png $(ICONNAME)@32.png $(ICONNAME)@16.png
 
-dist_icon_DATA = $(ICONNAME).svg $(ICONNAME).icns $(ICONPNGS) \
+dist_icon_DATA = $(ICONNAME).svg $(ICONPNGS) \
 	$(top_srcdir)/CC-BY-4.0
+
+dist_noinst_DATA = $(ICONNAME).icns
+
+noinst_DATA = $(ICONNAME).r
+
+DISTCLEANFILES = $(ICONPNGS) $(ICONNAME).icns
+
+CLEANFILES = $(ICONNAME).r
 
 $(ICONNAME).icns: $(ICONPNGS)
 if WITH_ICONUTIL
@@ -36,61 +47,71 @@ if WITH_ICONUTIL
 	$(ICONUTIL) -c icns -o $(ICONNAME).icns $(ICONNAME).iconset
 endif
 
+$(ICONNAME).r: $(top_srcdir)/icon.mk
+	echo "read 'icns' (-16455) \"$(ICONNAME).icns\";" > $(ICONNAME).r
+
 $(ICONNAME)@1024.png: $(ICONNAME).svg
 if WITH_RSVG_CONVERT
-	$(RSVG_CONVERT) -x 1024 -y 1024 -f png -o $@ $<
+	$(RSVG_CONVERT) $(RSVGPNGOPTS) -x 1024 -y 1024 $<
 endif
 if WITH_INKSCAPE
-	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 1024 -h 1024 $(abs_srcdir)/$<
+	$(INKSCAPE) $(INKSCAPEPNGOPTS) -w 1024 -h 1024 $(abs_srcdir)/$<
 endif
 
 $(ICONNAME)@512.png: $(ICONNAME).svg
 if WITH_RSVG_CONVERT
-	$(RSVG_CONVERT) -x 512 -y 512 -f png -o $@ $<
+	$(RSVG_CONVERT) $(RSVGPNGOPTS) -x 512 -y 512 $<
 endif
 if WITH_INKSCAPE
-	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 512 -h 512 $(abs_srcdir)/$<
+	$(INKSCAPE) $(INKSCAPEPNGOPTS) -w 512 -h 512 $(abs_srcdir)/$<
 endif
 
 $(ICONNAME)@256.png: $(ICONNAME).svg
 if WITH_RSVG_CONVERT
-	$(RSVG_CONVERT) -x 256 -y 256 -f png -o $@ $<
+	$(RSVG_CONVERT) $(RSVGPNGOPTS) -x 256 -y 256 $<
 endif
 if WITH_INKSCAPE
-	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 256 -h 256 $(abs_srcdir)/$<
+	$(INKSCAPE) $(INKSCAPEPNGOPTS) -w 256 -h 256 $(abs_srcdir)/$<
 endif
 
 $(ICONNAME)@128.png: $(ICONNAME).svg
 if WITH_RSVG_CONVERT
-	$(RSVG_CONVERT) -x 128 -y 128 -f png -o $@ $<
+	$(RSVG_CONVERT) $(RSVGPNGOPTS) -x 128 -y 128 $<
 endif
 if WITH_INKSCAPE
-	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 128 -h 128 $(abs_srcdir)/$<
+	$(INKSCAPE) $(INKSCAPEPNGOPTS) -w 128 -h 128 $(abs_srcdir)/$<
 endif
 
 $(ICONNAME)@64.png: $(ICONNAME).svg
 if WITH_RSVG_CONVERT
-	$(RSVG_CONVERT) -x 64 -y 64 -f png -o $@ $<
+	$(RSVG_CONVERT) $(RSVGPNGOPTS) -x 64 -y 64 $<
 endif
 if WITH_INKSCAPE
-	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 64 -h 64 $(abs_srcdir)/$<
+	$(INKSCAPE) $(INKSCAPEPNGOPTS) -w 64 -h 64 $(abs_srcdir)/$<
 endif
 
 $(ICONNAME)@32.png: $(ICONNAME).svg
 if WITH_RSVG_CONVERT
-	$(RSVG_CONVERT) -x 32 -y 32 -f png -o $@ $<
+	$(RSVG_CONVERT) $(RSVGPNGOPTS) -x 32 -y 32 $<
 endif
 if WITH_INKSCAPE
-	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 32 -h 32 $(abs_srcdir)/$<
+	$(INKSCAPE) $(INKSCAPEPNGOPTS) -w 32 -h 32 $(abs_srcdir)/$<
 endif
 
 $(ICONNAME)@16.png: $(ICONNAME).svg
 if WITH_RSVG_CONVERT
-	$(RSVG_CONVERT) -x 16 -y 16 -f png -o $@ $<
+	$(RSVG_CONVERT) $(RSVGPNGOPTS) -x 16 -y 16 $<
 endif
 if WITH_INKSCAPE
-	$(INKSCAPE) --export-png $(abs_builddir)/$@ -w 16 -h 16 $(abs_srcdir)/$<
+	$(INKSCAPE) $(INKSCAPEPNGOPTS) -w 16 -h 16 $(abs_srcdir)/$<
 endif
 
 clean-local:
 	rm -rf $(ICONNAME).iconset
+
+install-data-hook: $(ICONNAME).icns $(ICONNAME).r
+if WITH_REZ_SETFILE
+	$(MKDIR_P) $(DESTDIR)$(icondir)
+	$(REZ) -o $(DESTDIR)$(icondir)/`printf 'Icon\r'` $(ICONNAME).r
+	$(SETFILE) -a C $(DESTDIR)$(icondir)
+endif
